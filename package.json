@@ -1,0 +1,21 @@
+{
+  "name": "whatsapp-bot-api",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "api-dylux": "^1.8.5",
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.10",
+    "express": "^4.18.2",
+    "@sl-code-lords/si-subdl":"1.1.1",
+    "@sl-code-lords/esana-news":"1.1.0",
+    "ios-news":"1.0.1",
+    "ios-news": "^1.0.1",
+    "moment": "2.30.1",
+    "qrcode": "^1.5.4"
+  }
+}

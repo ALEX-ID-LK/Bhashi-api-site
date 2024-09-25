@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced API Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-image: url('https://i.ibb.co/9y7QQWH/image.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            animation: fadeIn 1s ease;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-top: 40px;
+        }
+
+        .api-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .api-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .api-status {
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background-color: #2ecc71;
+        }
+
+        .api-status.unavailable {
+            background-color: #e74c3c;
+        }
+
+        .api-status.checking {
+            background-color: #f39c12;
+        }
+
+        .api-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .api-path {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .api-description {
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .api-result {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .author-info {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        .monitor-board {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .monitor-item {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .monitor-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .snowflake {
+            color: #fff;
+            font-size: 1em;
+            font-family: Arial;
+            text-shadow: 0 0 1px #000;
+            position: fixed;
+            top: -10%;
+            z-index: 9999;
+            user-select: none;
+            cursor: default;
+            animation-name: snowflakes-fall, snowflakes-shake;
+            animation-duration: 10s, 3s;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            animation-play-state: running, running;
+        }
+
+        @keyframes snowflakes-fall {
+            0% { top: -10%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes snowflakes-shake {
+            0% { transform: translateX(0px); }
+            50% { transform: translateX(80px); }
+            100% { transform: translateX(0px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .api-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .api-status {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen">
+        <div class="spinner"></div>
+    </div>
+    <div class="container">
+        <h1>Bhashi - MD API Documentation</h1>
+        <div id="api-list"></div>
+        <h2>Monitor Board</h2>
+        <div class="monitor-board">
+            <div class="monitor-item">
+                <div class="monitor-value" id="total-requests">0</div>
+                <div>Total Requests</div>
+            </div>
+            <div class="monitor-item">
+                <div class="monitor-value" id="available-apis">0</div>
+                <div>Available APIs</div>
+            </div>
+            <div class="monitor-item">
+                <div class="monitor-value" id="unavailable-apis">0</div>
+                <div>Unavailable APIs</div>
+            </div>
+            <div class="monitor-item">
+                <div class="monitor-value" id="average-response-time">0 ms</div>
+                <div>Avg. Response Time</div>
+            </div>
+        </div>
+        <div class="author-info">
+            <p>Created by: Your Name</p>
+            <p>Last Updated: September 25, 2024</p>
+        </div>
+    </div>
+    <div id="alert" class="alert"></div>
+
+    <script>
+        const apiList = [
+            { name: 'YouTube Search', path: '/misc/youtube/search?q=Twice&apikey=', id: 'youtube', description: 'Search for YouTube videos using a keyword.' },
+             { name: 'BING Search', path: '/misc/bing?q=Twice&apikey=', id: 'youtube', description: 'Search from ' },
+            { name: 'Astronomy Picture of the Day (APOD)', path: '/misc/apod?apikey=', id: 'apod', description: 'Get NASA\'s Astronomy Picture of the Day.' },
+            { name: 'Random Cocktail', path: '/misc/cocktailrandom?apikey=', id: 'cocktail', description: 'Fetch information about a random cocktail.' },
+            { name: 'Location Info', path: '/misc/location/:ipAddress?apikey=', id: 'location', description: 'Get location information based on an IP address.' },
+            { name: 'Threads', path: '/misc/thread?url=https://www.threads.net/@momojypx/post/C52-OaTL3al&apikey=', id: 'threads', description: 'Fetch information about a Threads post.' },
+            { name: 'Tiktok', path: '/misc/tiktok?url=https://vm.tiktok.com/ZMhNNeDHU/&apikey=', id: 'tiktok', description: 'Get details about a TikTok video.' },
+            { name: 'Sporty News', path: '/misc/sportynews?apikey=', id: 'sport', description: 'Fetch the latest sports news.' },
+            { name: 'Derana News', path: '/misc/derananews?apikey=', id: 'dera', description: 'Get news from Derana.' },
+            { name: 'iOS News', path: '/misc/iosnews?apikey=', id: 'iosnews', description: 'Fetch the latest iOS-related news.' },
+            { name: 'Esana News', path: '/misc/esana?apikey=', id: 'esana', description: 'Get news from Esana.' },
+            { name: 'Cric', path: '/misc/cric?apikey=', id: 'cric', description: 'Fetch cricket-related information.' },
+            { name: 'ISS', path: '/misc/iss?apikey=', id: 'iss', description: 'Get current information about the International Space Station.' },
+            { name: 'ChatGPT', path: '/misc/chatgpt?q=hello&apikey=', id: 'chatgpt', description: 'Interact with ChatGPT AI.' },
+        ];
+
+        let totalRequests = 0;
+        let availableApis = 0;
+        let unavailableApis = 0;
+        let totalResponseTime = 0;
+
+        function createApiCard(api) {
+            return `
+                <div class="api-card" id="${api.id}-card">
+                    <div class="api-header" onclick="toggleApiContent('${api.id}')">
+                        <span class="api-name">${api.name}</span>
+                        <span class="api-status checking" id="${api.id}-status">Checking...</span>
+                    </div>
+                    <div class="api-content" id="${api.id}-content">
+                        <div class="api-description">${api.description}</div>
+                        <div class="api-path">${api.path}</div>
+                        <button class="copy-btn" onclick="copyApiPath('${api.path}')">Copy Path</button>
+                        <div class="api-result" id="${api.id}-result"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderApiList() {
+            const apiListElement = document.getElementById('api-list');
+            apiListElement.innerHTML = apiList.map(createApiCard).join('');
+        }
+
+        function toggleApiContent(apiId) {
+            const content = document.getElementById(`${apiId}-content`);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function copyApiPath(path) {
+            navigator.clipboard.writeText(path + 'key1')
+                .then(() => showAlert('Copied to clipboard: ' + path + 'key1'))
+                .catch(err => showAlert('Failed to copy: ' + err));
+        }
+
+        function showAlert(message) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        async function checkApiStatus(api) {
+            try {
+                const startTime = performance.now();
+                const response = await fetch(api.path + 'key1');
+                const endTime = performance.now();
+                const responseTime = endTime - startTime;
+
+                const statusElement = document.getElementById(`${api.id}-status`);
+                const resultElement = document.getElementById(`${api.id}-result`);
+
+                if (response.ok) {
+                    statusElement.textContent = 'Available';
+                    statusElement.classList.remove('checking', 'unavailable');
+                    statusElement.classList.add('available');
+                    availableApis++;
+
+                    const data = await response.json();
+                    resultElement.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    statusElement.textContent = 'Unavailable';
+                    statusElement.classList.remove('checking', 'available');
+                    statusElement.classList.add('unavailable');
+                    unavailableApis++;
+
+                    resultElement.textContent = 'Error: ' + response.status + ' ' + response.statusText;
+                }
+
+                totalRequests++;
+                totalResponseTime += responseTime;
+                updateMonitorBoard();
+            } catch (error) {
+                const statusElement = document.getElementById(`${api.id}-status`);
+                statusElement.textContent = 'Error';
+                statusElement.classList.remove('checking', 'available');
+                statusElement.classList.add('unavailable');
+                unavailableApis++;
+
+                const resultElement = document.getElementById(`${api.id}-result`);
+                resultElement.textContent = 'Error: ' + error.message;
+
+                totalRequests++;
+                updateMonitorBoard();
+            }
+        }
+
+        function updateMonitorBoard() {
+            document.getElementById('total-requests').textContent = totalRequests;
+            document.getElementById('available-apis').textContent = availableApis;
+            document.getElementById('unavailable-apis').textContent = unavailableApis;
+            const avgResponseTime = totalRequests > 0 ? Math.round(totalResponseTime / totalRequests) : 0;
+            document.getElementById('average-response-time').textContent = `${avgResponseTime} ms`;
+
+            document.querySelectorAll('.monitor-value').forEach(el => {
+                el.style.animation = 'pulse 0.5s';
+                setTimeout(() => el.style.animation = '', 10);
+            });
+        }
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.querySelector('.loading-screen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }
+
+        async function initializeApp() {
+            renderApiList();
+            setTimeout(hideLoadingScreen, 1000); // Hide loading screen after 1 second
+
+            for (const api of apiList) {
+                await checkApiStatus(api);
+            }
+        }
+
+        window.onload = initializeApp;
+    </script>
+</body>
+</html>
+
+
