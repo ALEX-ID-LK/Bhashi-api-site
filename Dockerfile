@@ -1,19 +1,32 @@
+# Use Node.js LTS version (Debian-based)
 FROM node:lts-buster
 
+# Set environment variables
+ENV NODE_ENV=production
+
+# Update the package repository and install dependencies
 RUN apt-get update && \
   apt-get install -y \
   ffmpeg \
   imagemagick \
   webp && \
-  apt-get upgrade -y && \
+  apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-COPY package.json .
+# Set the working directory inside the container
+WORKDIR /usr/src/app
 
-RUN npm install && npm install -g qrcode-terminal pm2
+# Copy package.json first to leverage Docker caching
+COPY package.json ./
 
+# Install Node.js dependencies
+RUN npm install --production && npm install -g qrcode-terminal pm2
+
+# Copy all other files to the working directory
 COPY . .
 
+# Expose the port on which the app will run
 EXPOSE 3000
 
+# Start the app with PM2 in runtime mode
 CMD ["pm2-runtime", "start", "server.js"]
