@@ -12,6 +12,7 @@
     "cheerio": "^1.0.0-rc.10",
     "express": "^4.18.2",
     "@sl-code-lords/si-subdl":"1.1.1",
+    "express": "latest",
     "@sl-code-lords/esana-news":"1.1.0",
     "ios-news":"1.0.1",
     "ios-news": "^1.0.1",
